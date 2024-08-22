@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EuroTalk</title>
+    <link rel="stylesheet" href="/static/style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400..900&display=swap" rel="stylesheet">
+    <link rel="shortcut icon" href="https://eurofarma.com.br/favicon.png">
+</head>
+
+
+
+<body>
+
+    <main id="main-content">
+
+        <div class="modal" id="modal1">
+            <div class="modal-content">
+                <div class="header">
+                    <h1>Como usar o EuroTalk ?</h1>
+                    <img src="static/eva_capa.png">
+                </div>
+                <div class="message">
+                    <p>📝 Seja Claro e Específico Faça perguntas diretas para obter respostas precisas. Exemplo: "Quais são as políticas de privacidade da empresa?"</p>
+                    <p>🔍 Use Palavras-chave Relevantes Inclua termos específicos relacionados à sua dúvida. Exemplo: "Requisitos de segurança para dados de clientes."</p>
+                    <p>💬 Peça Mais Detalhes Se precisar de mais informações, peça detalhes adicionais. Exemplo: "Pode me explicar mais sobre dar presentes ou brindes?"</p>
+                    <p>🔄 Faça uma Pergunta por Vez Para respostas mais claras, pergunte uma coisa de cada vez.</p>
+                </div>
+                <button class="start-button" id="to-modal2">Entendi, Vamos Lá !</button>
+            </div>
+        </div>
+
+        <div class="modal" id="modal2">
+            <div class="modal-content">
+                <div class="header">
+                    <h1>EuroTalk</h1>
+                    <img src="static/eva_capa.png">
+                </div>
+                <div class="message">
+                    <p>👋 Olá! Seja bem-vindo ao Compliance Conectado! </p>
+                    <p>🤖 Estou aqui para ajudar você a navegar pelo mundo da conformidade e ética empresarial de uma maneira leve e divertida.</p>
+                    <p>🌐 Objetivo: Quer saber mais sobre o que é compliance e por que é importante?</p>
+                    <p>📚 Treinamentos: Está procurando por treinamentos e recursos de compliance?</p>
+                    <p>✉️ Denúncias: Precisa saber como fazer uma denúncia de forma segura e anônima?</p>
+                    <p>❓ Dúvidas: Tem alguma dúvida específica sobre nossas políticas de compliance?</p>
+                </div>
+                <button class="back-button" id="back-to-modal1">Como usar o EuroTalk ?</button>
+            </div>
+        </div>
+
+        <div id="top-bar">
+            <div id="dropdown-container">
+                <select class="" id="language-select">
+                    <option value="" disabled selected></option>
+                    <!-- As opções de idiomas serão adicionadas dinamicamente pelo JavaScript -->
+                </select>
+            </div>
+            <button id="help-button" class="help-button">Ajuda ?</button>
+        </div>
+        
+        <div class="title-section">
+            <h1 class="orbitron-uniquifier">Euro<span class="neon-text">Talk</span></h1>
+            <img src="/static/eva_capa.png" alt="" id="imgtitle">
+        </div>
+        
+        <hr class="divider">
+        <div id="chatbox">
+            <div id="messages">
+                <!-- As mensagens serão inseridas aqui -->
+            </div>
+            <form id="chat-form">
+                <input type="text" id="message" placeholder="Digite sua pergunta aqui...">
+                <button type="submit">Enviar</button>
+            </form>
+        </div>
+    </main>
+    
+
+    <script src="/static/script.js"></script>
+    <div vw class="enabled">
+        <div vw-access-button class="active"></div>
+        <div vw-plugin-wrapper>
+            <div class="vw-plugin-top-wrapper"></div>
+        </div>
+    </div>
+    <script src="https://vlibras.gov.br/app/vlibras-plugin.js"></script>
+    <script>
+        new window.VLibras.Widget('https://vlibras.gov.br/app');
+    </script>

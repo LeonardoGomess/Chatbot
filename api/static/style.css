@@ -1,0 +1,460 @@
+body {
+  font-family: 'Helvetica Neue', Arial, sans-serif;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+   background-image: url(/static/Walpaper.png);
+      background-size: cover; /* Faz com que a imagem cubra todo o fundo */
+      background-repeat: no-repeat; /* Evita que a imagem se repita */
+      background-position: center; /* Centraliza a imagem no fundo */
+  margin: 0;
+  color: #dcdcdc;
+  
+}
+
+.typing-animation {
+  position: relative;
+  display: inline-block;
+  width: 100%;
+}
+
+.typing-animation::after {
+  content: '|';
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  animation: blink 1s infinite;
+}
+
+@keyframes blink {
+  0% { opacity: 1; }
+  50% { opacity: 0; }
+  100% { opacity: 1; }
+}
+
+
+/* // <weight>: Use a value from 400 to 900 */
+
+.orbitron-uniquifier {
+  font-family: "Orbitron", sans-serif;
+  font-optical-sizing: auto;
+  font-weight: weight;
+  font-style: normal;
+  text-align: center;
+}
+
+
+
+
+ .neon-text {
+
+    
+    color: #ffffff; /* Cor principal do texto (branco) */
+    text-shadow: 
+        0 0 3px #00aaff,   /* Primeira camada de brilho */
+        0 0 6px #00aaff,   /* Segunda camada de brilho */
+        0 0 9px #00aaff,   /* Terceira camada de brilho */
+        0 0 12px #0077cc,  /* Quarta camada de brilho (azul mais escuro) */
+        0 0 15px #0077cc,  /* Quinta camada de brilho */
+        0 0 18px #0077cc,  /* Sexta camada de brilho */
+        0 0 21px #0077cc;  /* Sétima camada de brilho */
+ 
+    background: none; /* Remove o fundo, se houver */
+}
+
+
+
+
+
+#main-content {
+  display: flex;
+  width: 100%;
+  max-width: 1200px; /* Largura máxima ajustada para 1200px */
+  height: 100vh;
+  box-shadow: 0 0 10px rgba(0, 35, 102, 0.5) !important;
+  flex-direction: column; /* Ajuste para responsividade */
+}
+
+.modal {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  z-index: 9999;
+}
+
+.modal-hidden {
+  display: none;
+}
+
+.modal-visible {
+  display: flex;
+}
+
+
+
+.modal-content {
+  background-color: #002366;
+  padding: 20px;
+  border-radius: 10px;
+  width: 80%;
+  max-width: 40%;
+  text-align: center;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  border: 6px solid #000b51;
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 20px;
+}
+
+.header img {
+  width: 100px;
+  height: 60px;
+  margin-right: 10px;
+}
+
+.header h1 {
+  font-size: 28px;
+  color: #ffffff;
+  margin: 0;
+}
+
+.message {
+  margin-bottom: 20px;
+  font-size: 18px;
+  line-height: 1.5;
+  white-space: normal; /* Permite a quebra de linha */
+  width: 100%;
+}
+
+p {
+  width: 100%;
+}
+.back-button,
+.start-button,
+.close-button {
+  padding: 10px 20px;
+  font-size: 16px;
+  background-color: #fff200;
+  color: rgb(0, 0, 0);
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.start-button:hover,
+.close-button:hover {
+  background-color: #a08800;
+} 
+
+
+#top-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  padding: 10px;
+}
+
+.help-button {
+  appearance: none; /* Remove o estilo padrão do navegador */
+  background: #003366; /* Cor de fundo azul escuro */
+  border: 1px solid #004080; /* Borda azul mais clara */
+  border-radius: 4px; /* Bordas arredondadas */
+  padding: 10px 15px; /* Espaçamento interno */
+  font-size: 16px; /* Tamanho da fonte */
+  color: #ffffff; /* Cor do texto em branco */
+  width: 200px; /* Largura do select */
+  cursor: pointer; /* Cursor em forma de ponteiro */
+  position: relative;
+  
+}
+
+.help-button:hover {
+  background-color: #000b51;
+}
+
+#dropdown-container {
+  display: flex;
+  align-items: center;
+}
+
+
+#sidebar {
+  width: 300px;
+ 
+  padding: 20px;
+  box-sizing: border-box;
+  overflow-y: auto;
+}
+
+#sidebar h2 {
+  margin-top: 0;
+  color: #ffffff;
+}
+
+#main-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  
+  padding: 20px;
+  box-sizing: border-box;
+}
+
+h1 {
+  text-align: center;
+  font-size: 2.5rem;
+  color: #ffffff;
+  margin: 20px 0;
+}
+
+/* CSS para a linha responsiva que divide o título com a imagem do chat */
+.title-section {
+  display: flex;
+  justify-content: center; /* Centraliza o conteúdo horizontalmente */
+  align-items: center; /* Centraliza o conteúdo verticalmente */
+  margin-top: 20px; /* Ajuste a margem conforme necessário */
+}
+
+.divider {
+    border: none; /* Remove a borda padrão */
+    
+    
+    margin-inline: 450px;
+}
+
+
+
+/* Ajustes adicionais conforme necessário */
+#imgtitle {
+  width: 150px; /* Ajuste o tamanho conforme necessário */
+  height: auto; /* Mantém a proporção original */
+  margin-left: -30px; /* Espaço à esquerda da imagem */
+}
+
+#chatbox {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  /* background-color: #002366; */
+  padding: 20px;
+  box-sizing: border-box;
+  overflow: auto; /* Add this rule to enable scrolling /
+  max-height: calc(100vh - 200px); / Adjust height as needed */
+}
+#messages {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  overflow-y: auto; /* Adicionado para permitir rolagem vertical */
+  padding: 0;
+  
+  max-height: calc(100vh - 200px); /* Ajustado para a versão desktop */
+}
+
+.chat-message {
+  padding: 10px 20px;
+  margin: 10px 0;
+  border-radius: 10px;
+  max-width: 80%;
+  word-wrap: break-word;
+  align-self: flex-start;
+  font-size: 1rem;
+}
+
+.user-message {
+  background-color: #ffffff;
+  color: #002366;
+  align-self: flex-end;
+  max-width: 80%; /* Ajustado para melhor largura */
+}
+
+.chatbot-message {
+  /* background-color: #002366; */
+  color: #d0d0d0;
+  display: flex;
+  align-items: center;
+  max-width: 80%; /* Ajustado para melhor largura */
+}
+
+.chatbot-message img {
+  width: 100px;
+  height: 60px;
+  border-radius: 50%;
+  margin-right: -13px;
+}
+
+.chatbot-message > div {
+  background-color: #fff200;  
+  color: #000000;
+  padding: 10px 20px;
+  border-radius: 10px;
+  max-width: 80%; /* Ajustado para melhor largura */
+  word-wrap: break-word;
+  font-size: 1rem;
+}
+
+#error-message {
+  background-color: #d9534f;
+  color: #ffffff;
+  align-self: center;
+}
+
+#chat-form {
+  display: flex;
+  width: 100%;
+  padding: 20px;
+  background-color: #002366;
+  box-shadow: 0 -4px 8px rgba(0, 0, 0, 0.3);
+  align-items: center;
+  gap: 10px;
+  box-sizing: border-box;
+  border-radius: 360px;
+}
+
+
+
+#message {
+  flex: 1;
+  padding: 15px;
+  border: none;
+  border-radius: 5px;
+  font-size: 1rem;
+  background-color: #000b51;
+  color: #FFD700;
+}
+
+button[type="submit"] {
+  background-color: #FFD700;
+  color: #002366;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  font-size: 1rem;
+}
+
+button[type="submit"]:hover {
+  background-color: #a08800;
+}
+
+
+
+
+
+
+#messages::-webkit-scrollbar {
+  width: 12px; /* Largura da barra de rolagem */
+  /* background-color: #002366; Cor do fundo da barra de rolagem */
+}
+
+/* Cor e estilo da parte interna da barra de rolagem */
+#messages::-webkit-scrollbar-thumb {
+  background-color: #FFF200; /* Cor da barra de rolagem */
+  border-radius: 10px; /* Deixa a barra de rolagem arredondada */
+}
+
+/* Ajustes para Firefox */
+#messages {
+  scrollbar-width: thin;
+  scrollbar-color: #FFF200 #00246600;
+}
+
+/* Para IE e Edge antigos */
+#messages {
+  -ms-overflow-style: none; /* Para ocultar a barra padrão em IE e Edge */
+}
+
+#messages::-ms-scrollbar {
+  width: 12px;
+  background-color: #002366;
+}
+
+#messages::-ms-scrollbar-thumb {
+  background-color: #FFD700;
+  border-radius: 10px;
+}
+
+
+
+/* Estilos para o container do select */
+#language-select {
+    appearance: none; /* Remove o estilo padrão do navegador */
+    background: #003366; /* Cor de fundo azul escuro */
+    border: 1px solid #004080; /* Borda azul mais clara */
+    border-radius: 4px; /* Bordas arredondadas */
+    padding: 10px 15px; /* Espaçamento interno */
+    font-size: 16px; /* Tamanho da fonte */
+    color: #ffffff; /* Cor do texto em branco */
+    width: 200px; /* Largura do select */
+    cursor: pointer; /* Cursor em forma de ponteiro */
+    position: relative; /* Posiciona o select de forma relativa para o estilo do ícone */
+}
+
+/* Estilo para a seta do select */
+#language-select::after {
+    content: '▼'; /* Adiciona uma seta para baixo */
+    position: absolute;
+    right: 10px; /* Espaço da borda direita */
+    top: 50%;
+    transform: translateY(-50%); /* Centraliza verticalmente */
+    font-size: 12px; /* Tamanho da seta */
+    color: #ffffff; /* Cor da seta em branco */
+    pointer-events: none; /* Não interfere com o clique */
+}
+
+/* Estilo do dropdown ao foco */
+#language-select:focus {
+    border-color: #3399ff; /* Cor da borda ao focar */
+    outline: none; /* Remove o contorno padrão */
+    box-shadow: 0 0 0 2px rgba(51, 153, 255, 0.25); /* Sombra de foco */
+}
+
+@media (max-width: 768px) {
+  .chatbot-message {
+    max-width: 85%; /* Reduz a largura máxima das mensagens do chatbot */
+    padding: 10px 15px; /* Mantém o espaçamento interno */
+    margin: 0 0 0 5%; /* Alinha a mensagem mais à esquerda */
+  }
+
+  .chatbot-message > div {
+    max-width: 85%; /* Ajusta a largura máxima do conteúdo da mensagem do chatbot */
+    padding: 10px 15px; /* Mantém o espaçamento interno */
+    margin: 0 0 0 5%; /* Alinha o conteúdo mais à esquerda */
+  }
+}
+
+@media (max-width: 480px) {
+  .chatbot-message {
+    max-width: 90%; /* Reduz a largura máxima ainda mais para telas muito pequenas */
+    padding: 10px 10px; /* Mantém o espaçamento interno */
+    margin: 0 50px 0 -12%; /* Alinha a mensagem mais à esquerda */
+  }
+
+  .chatbot-message > div {
+    max-width: 90%; /* Ajusta a largura máxima do conteúdo da mensagem do chatbot */
+    padding: 10px 10px; /* Mantém o espaçamento interno */
+    margin: 0 0 0 -5%; /* Alinha o conteúdo mais à esquerda */
+  }
+}
+
+@media (max-width: 768px) {
+  .modal-content {
+    max-width: 60%; /* Reduz a largura do modal em telas menores */
+    padding: 15px; /* Ajusta o padding para telas menores */
+  }
+}
