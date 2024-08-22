@@ -172,7 +172,6 @@ def atualizar_contexto(contexto, pergunta, resposta, limite=5):
     return contexto
 
 
-
 # Rota para o chat
 @app.route('/chat', methods=['POST'])
 def chat():
