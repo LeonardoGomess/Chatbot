@@ -5,13 +5,23 @@ body {
   align-items: center;
   min-height: 100vh;
    background-image: url(/static/Walpaper.png);
-      background-size: cover; /* Faz com que a imagem cubra todo o fundo */
-      background-repeat: no-repeat; /* Evita que a imagem se repita */
-      background-position: center; /* Centraliza a imagem no fundo */
+      background-size: cover; 
+      background-repeat: no-repeat; 
+      background-position: center; 
   margin: 0;
   color: #dcdcdc;
+
+  position: static !important;
+  top: 0 !important;
+
+
+   font-family: 'Orbitron', sans-serif;
   
 }
+
+
+
+
 
 .typing-animation {
   position: relative;
@@ -37,14 +47,12 @@ body {
 /* // <weight>: Use a value from 400 to 900 */
 
 .orbitron-uniquifier {
-  font-family: "Orbitron", sans-serif;
+  font-family:sans-serif;
   font-optical-sizing: auto;
   font-weight: weight;
   font-style: normal;
   text-align: center;
 }
-
-
 
 
  .neon-text {
@@ -72,7 +80,6 @@ body {
   width: 100%;
   max-width: 1200px; /* Largura máxima ajustada para 1200px */
   height: 100vh;
-  box-shadow: 0 0 10px rgba(0, 35, 102, 0.5) !important;
   flex-direction: column; /* Ajuste para responsividade */
 }
 
@@ -172,12 +179,13 @@ p {
   background: #003366; /* Cor de fundo azul escuro */
   border: 1px solid #004080; /* Borda azul mais clara */
   border-radius: 4px; /* Bordas arredondadas */
-  padding: 10px 15px; /* Espaçamento interno */
+  padding: 10px 10px; /* Espaçamento interno */
   font-size: 16px; /* Tamanho da fonte */
   color: #ffffff; /* Cor do texto em branco */
   width: 200px; /* Largura do select */
   cursor: pointer; /* Cursor em forma de ponteiro */
   position: relative;
+  width: 100px;
   
 }
 
@@ -322,7 +330,7 @@ h1 {
   align-items: center;
   gap: 10px;
   box-sizing: border-box;
-  border-radius: 360px;
+  border-radius: 5px;
 }
 
 
@@ -391,7 +399,35 @@ button[type="submit"]:hover {
 
 
 
-/* Estilos para o container do select */
+.VIpgJd-ZVi9od-ORHb-OEVmcd {    
+  display: none;
+}
+
+.goog-te-gadget-icon{
+  background-image: none !important;
+  display: none !important;
+}
+
+.goog-te-gadget-simple {
+  
+    background-color: #003366 !important;
+    border-left: 1px solid #003366 !important;
+    border-top: 1px solid #003366 !important;
+    border-bottom: 1px solid #003366 !important;
+    border-right: 1px solid #003366 !important;
+    font-size: 10pt;
+    display: inline-block;
+    cursor: pointer;
+    border-radius: 4px !important;
+    padding: 10px 15px !important;
+}
+
+.goog-te-gadget-simple .VIpgJd-ZVi9od-xl07Ob-lTBxed {
+  color: #ffffff !important;
+}
+
+
+Estilos para o container do select
 #language-select {
     appearance: none; /* Remove o estilo padrão do navegador */
     background: #003366; /* Cor de fundo azul escuro */
@@ -423,6 +459,203 @@ button[type="submit"]:hover {
     outline: none; /* Remove o contorno padrão */
     box-shadow: 0 0 0 2px rgba(51, 153, 255, 0.25); /* Sombra de foco */
 }
+
+
+
+
+
+/* Menu Lateral */
+
+#menuLateralToggle {
+    position: fixed; /* Fixado na tela */
+    top: 20px; /* Distância do topo */
+    left: 20px; /* Distância da esquerda */
+    z-index: 1001; /* A acima do menu lateral */
+    background-color: transparent; /* Remove o fundo azul */
+    color: white; /* Cor do texto */
+    border: 2px solid white; /* Borda branca */
+    border-radius: 100px; /* Bordas arredondadas */
+    padding: 10px 15px; /* Espaçamento interno do botão */
+    transition: background-color 0.3s, color 0.3s, border-color 0.3s; /* Efeito de transição */
+}
+
+#menuLateralToggle:hover {
+    background-color: rgba(255, 255, 255, 0.2); /* Fundo claro ao passar o mouse */
+    color: #007bff; /* Cor do texto ao passar o mouse */
+    border-color: #007bff; /* Cor da borda ao passar o mouse */
+}
+
+#menuLateralToggle.active {
+    background-color: rgba(0, 0, 0, 0.4); /* Fundo mais escuro quando ativo */
+    color: #007bff; /* Cor do texto ao ativo */
+    border-color: #007bff; /* Cor da borda ao ativo */
+}
+
+
+
+#menuLateral.active {
+    transform: translateX(0); /* Expande o menu */
+}
+
+#menuLateral {
+  height: 100vh; /* Altura total da tela */
+  position: fixed;
+  width: 250px;
+  background-color: #011b34; /* Cor do fundo */
+  color: white; /* Cor do texto */
+  padding: 20px;
+  left: 0; /* Sempre visível */
+  transition: transform 0.3s;
+  transform: translateX(-100%); /* Começa escondido */
+  z-index: 1000; /* Acima de outros elementos */
+  overflow-y: auto; /* Habilita rolagem vertical */
+}
+
+
+#menuLateral.active {
+    transform: translateX(0); /* Expande o menu */
+}
+
+.pilulas {
+    margin-top: 100px; /* Espaço entre o título e os cards */
+}
+
+.card {
+    background-color: #002447; /* Cor de fundo dos cards */
+    border: none; /* Remove a borda padrão */
+    border-radius: 10px; /* Bordas arredondadas */
+    text-align: center; /* Centraliza o texto */
+    margin-bottom: 20px; /* Espaçamento entre os cards */
+    padding: 20px; /* Espaçamento interno */
+    transition: background-color 0.3s; /* Efeito de transição */
+  
+}
+
+
+.card-link {
+    color: white; /* Cor do texto */
+    text-decoration: none; /* Remove o sublinhado */
+    font-size: 1.2rem; /* Tamanho da fonte */
+    display: block; /* Faz o link ocupar todo o card */
+}
+
+.card:hover {
+    background-color: #6c757d; /* Cor ao passar o mouse */
+}
+
+#main-content {
+    transition: margin-left 0.3s;
+    margin-left: 0; /* Começa sem margem */
+}
+
+#main-content.shifted {
+    margin-left: 250px; /* Espaço para o menu lateral */
+}
+
+
+
+/* Perguntas frequentes Css  */
+
+#frequent-questions {
+    display: flex;
+    flex-direction: column; /* Coloca os botões em coluna */
+    align-items: center; /* Centraliza horizontalmente */
+    justify-content: center; /* Centraliza verticalmente */
+    text-align: center; /* Centraliza o texto dos botões */
+}
+
+.frequent-questions {
+    display: flex;
+    flex-wrap: wrap; /* Permite que os botões se ajustem em múltiplas linhas */
+    justify-content: center; /* Centraliza os botões na linha */
+}
+
+.question-btn {
+    background-color: #191d3ad5; /* Cor de fundo */
+    color: white; /* Cor do texto */
+    padding: 20px; /* Aumenta o espaçamento interno */
+    margin: 15px; /* Aumenta a margem externa */
+    border-radius: 10px; /* Bordas arredondadas */
+    text-align: center; /* Centraliza o texto */
+    text-decoration: none; /* Remove sublinhado */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.47); /* Sombra */
+    transition: transform 0.2s; /* Animação ao passar o mouse */
+    border: none;
+    width: 150px; /* Largura fixa para os botões */
+    height: 60px; /* Altura fixa para os botões */
+    display: flex; /* Para alinhar o texto verticalmente */
+    justify-content: center; /* Centraliza horizontalmente */
+    align-items: center; /* Centraliza verticalmente */
+}
+
+.question-btn:hover {
+    transform: scale(1.05); /* Aumenta ligeiramente o botão ao passar o mouse */
+}
+
+
+
+
+/* Estilo do container do select e botão */
+.select-container {
+    margin-top: 20px;
+    padding: 10px;
+    background-color: #002447;
+    border-radius: 8px;
+    text-align: center;
+}
+
+.select-container label {
+    font-size: 16px;
+    color: #ecf0f1;
+    display: block;
+    margin-bottom: 10px;
+}
+
+.select-container select {
+    width: 80%;
+    padding: 10px;
+    font-size: 16px;
+    border-radius: 5px;
+    border: none;
+    background-color: #34495e;
+    color: #ecf0f1;
+    margin-bottom: 15px;
+    text-align-last: center;
+    transition: background-color 0.3s ease;
+}
+
+.select-container select:hover {
+    background-color: #3b566e;
+}
+
+.select-container button {
+    padding: 10px 20px;
+    background-color: #fff200;
+    color: #000000;
+    border: none;
+    border-radius: 5px;
+    font-size: 16px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.select-container button:hover {
+    background-color: #FFD700;
+}
+
+.select-container button:focus {
+    outline: none;
+}
+
+/* Adicione um pouco de sombra para destacar */
+.select-container select, .select-container button {
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+
+
+
+
 
 @media (max-width: 768px) {
   .chatbot-message {
@@ -458,3 +691,4 @@ button[type="submit"]:hover {
     padding: 15px; /* Ajusta o padding para telas menores */
   }
 }
+

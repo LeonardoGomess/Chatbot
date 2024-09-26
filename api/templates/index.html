@@ -5,15 +5,60 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>EuroTalk</title>
     <link rel="stylesheet" href="/static/style.css">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400..900&display=swap" rel="stylesheet">
+
     <link rel="shortcut icon" href="https://eurofarma.com.br/favicon.png">
 </head>
 
 
 
 <body>
+
+ <button id="menuLateralToggle" class="">☰</button>
+
+<div id="menuLateral" class="closed">
+    <div class="pilulas">
+        <h1 class="orbitron-uniquifier">Pílulas Compliance</h1>
+      
+        <div class="card-deck">
+            <div class="card">
+                <a href="https://eurofarma.com.br/artigos" class="card-link" target="_blank">Acesse todas as Pílulas</a>
+            </div>
+            <div class="card">
+                <a href="https://eurofarma.com.br/governanca-corporativa" class="card-link" target="_blank">Governança Corporativa</a>
+            </div>
+            <div class="card">
+                <a href="https://eurofarma.com.br/artigos/voce-sabe-o-que-e-amamentacao-cruzada" class="card-link" target="_blank">Compliance</a>
+            </div>
+            <div class="card">
+                <a href="https://eurofarma.com.br/papo-de-farmacia/mes-do-cliente-estrategia-para-aumentar-vendas" class="card-link" target="_blank">Ética Empresarial</a>
+            </div>
+            <div class="card">
+                <a href="https://eurofarma.com.br/papo-de-farmacia/guia-rapido-da-intercambialidade-de-medicamentos" class="card-link" target="_blank">Conformidade Regulatória</a>
+            </div>
+            <div class="card">
+                <a href="https://eurofarma.com.br/artigos/problemas-respiratorios-no-clima-seco" class="card-link" target="_blank">Auditoria Ética</a>
+            </div>
+        </div>
+
+        
+        <div class="select-container">
+            <label for="pdfSelect">Lista de manuais Eurofarma Compliace.<br>Selecione um PDF:</label>
+            <br>
+            <select id="pdfSelect">
+                <option value="" selected disabled>Selecione um PDF</option>
+                <option value="../static/pdf1.pdf">Código de ética e conduta do fornecedor</option>
+                <option value="../static/pdf2.pdf">Código de conduta Conduta</option>
+            </select>
+            <br>
+            <button id="downloadPdfBtn">Download</button>
+        </div>
+    </div>
+</div>
+<!-- <a href="Curriculo/curriculo-Vitor-2023.pdf" download="curriculo-Vitor-2023.pdf" type="application/pdf" -->
+
+
+   
+    
 
     <main id="main-content">
 
@@ -52,13 +97,14 @@
         </div>
 
         <div id="top-bar">
-            <div id="dropdown-container">
+            <!-- <div id="dropdown-container">
                 <select class="" id="language-select">
                     <option value="" disabled selected></option>
-                    <!-- As opções de idiomas serão adicionadas dinamicamente pelo JavaScript -->
+                   
                 </select>
-            </div>
-            <button id="help-button" class="help-button">Ajuda ?</button>
+            </div> -->
+            <div id="select_language"></div>
+            <button id="help-button" class="help-button">Ajuda ?</button >
         </div>
         
         <div class="title-section">
@@ -67,7 +113,33 @@
         </div>
         
         <hr class="divider">
+
+</div>
+</div>
+
+
         <div id="chatbox">
+
+<div id="frequent-questions">
+
+    
+    <h2>Dúvidas Frequentes:</h2>
+    <div class="frequent-questions">
+        <button class="question-btn" data-question="Quais são as políticas de privacidade da empresa?">Sobre Política de Privacidade </button>
+        <button class="question-btn" data-question="Requisitos de segurança para dados de clientes.">Sobre Segurança de Dados</button>
+        <button class="question-btn" data-question="Dentro da EuroFarma, eu posso dar presentes ou brindes para os funcionários ou colegas de trabalho?"> Sobre Presentes e Brindes</button>
+    </div>
+    
+    <div class="frequent-questions">
+        <button class="question-btn" data-question="Quais são os critérios para seleção de fornecedores?">Sobre Seleção de Fornecedores</button>
+        <button class="question-btn" data-question="Como posso relatar um problema ético?">Sobre Relato de Problemas Éticos</button>
+        <button class="question-btn" data-question="Como posso fazer denuncias?">Como fazer Denuncias</button>
+    </div>
+    
+</div>
+
+
+
             <div id="messages">
                 <!-- As mensagens serão inseridas aqui -->
             </div>
@@ -90,3 +162,16 @@
     <script>
         new window.VLibras.Widget('https://vlibras.gov.br/app');
     </script>
+
+<script type="text/javascript">
+    function googleTranslateElementInit() {
+        new google.translate.TranslateElement({
+            pageLanguage: 'pt',
+            includedLanguages: 'en,es,pt',
+            layout: google.translate.TranslateElement.InlineLayout.SIMPLE
+        }, 'select_language');
+    }
+</script>
+<script type="text/javascript" src="https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
+
+</body>

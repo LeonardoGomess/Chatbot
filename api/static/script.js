@@ -3,7 +3,6 @@ document.addEventListener('DOMContentLoaded', function() {
     const chatbox = document.getElementById('chatbox');
     const chatForm = document.getElementById('chat-form');
     const messageInput = document.getElementById('message');
-    const languageSelect = document.getElementById('language-select');
 
     const modal1 = document.getElementById('modal1');
     const modal2 = document.getElementById('modal2');
@@ -11,71 +10,41 @@ document.addEventListener('DOMContentLoaded', function() {
     const closeModal2 = document.getElementById('back-to-modal1');
     const helpButton = document.getElementById('help-button');
 
-
     toModal2Button.addEventListener('click', () => {
         modal1.style.display = 'none';
-        
     });
 
     closeModal2.addEventListener('click', () => {
         modal2.style.display = 'none';
-        
     });
 
     helpButton.addEventListener('click', () => {
-        modal1.style.display = 'flex'; // Mostra o segundo modal
-        modal2.style.display = 'none'; // Oculta o primeiro modal
+        modal1.style.display = 'flex'; // Mostra o primeiro modal
+        modal2.style.display = 'none'; // Oculta o segundo modal
     });
-    // Função para carregar idiomas do arquivo JSON
-    function loadLanguages() {
-        fetch('/static/languages.json')  // Caminho relativo à raiz do projeto
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error('Network response was not ok');
-                }
-                return response.json();
-            })
-            .then(languages => {
-                console.log('Languages loaded:', languages);  // Verifique o conteúdo do JSON no console
-                languageSelect.innerHTML = '';  // Limpa o dropdown
-                // Adiciona o placeholder
-                const placeholderOption = document.createElement('option');
-                placeholderOption.value = '';
-                placeholderOption.disabled = true;
-                placeholderOption.selected = true;
-                placeholderOption.textContent = 'Traduzir Página 🌐';
-                languageSelect.appendChild(placeholderOption);
-                // Adiciona as opções de idiomas
-                languages.forEach(language => {
-                    const option = document.createElement('option');
-                    option.value = language.code;
-                    option.textContent = language.name;
-                    languageSelect.appendChild(option);
-                });
-            })
-            .catch(error => {
-                console.error('Erro ao carregar os idiomas:', error);
-            });
-    }
-  
-    loadLanguages();
-  
+
     chatbox.scrollTop = chatbox.scrollHeight;
-  
+
     chatForm.addEventListener('submit', function(event) {
         event.preventDefault();
-    
+
+        // Remove a div de perguntas frequentes ao enviar o formulário
+        const frequentQuestionsDiv = document.getElementById('frequent-questions');
+        if (frequentQuestionsDiv) {
+            frequentQuestionsDiv.remove(); // Remove a div do DOM
+        }
+
         const userMessage = messageInput.value.trim();
         if (userMessage !== '') {
             const messageElement = createMessageElement(userMessage, 'user-message');
             messages.appendChild(messageElement);
             messageInput.value = '';
-    
+
             // Adiciona a animação de "digitando"
-            const typingMessageElement = createMessageElement('...', 'chatbot-message');
+            const typingMessageElement = createMessageElement('Pensando...', 'chatbot-message');
             messages.appendChild(typingMessageElement);
             chatbox.scrollTop = chatbox.scrollHeight;
-    
+
             fetch('/chat', {
                 method: 'POST',
                 headers: {
@@ -90,7 +59,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 const responseElement = createMessageElement(chatbotResponse, 'chatbot-message');
                 messages.appendChild(responseElement);
                 chatbox.scrollTop = chatbox.scrollHeight;
-    
+
                 // Traduzir a nova mensagem do chatbot após adicioná-la
                 translateMessages(languageSelect.value);
             })
@@ -103,38 +72,36 @@ document.addEventListener('DOMContentLoaded', function() {
             });
         }
     });
-    
-  
+
     const observer = new MutationObserver(() => {
         chatbox.scrollTop = chatbox.scrollHeight;
     });
-  
+
     observer.observe(messages, { childList: true });
-  
+
     function createMessageElement(text, className) {
         const messageElement = document.createElement('div');
         messageElement.classList.add('chat-message', className);
-    
+
         if (className === 'chatbot-message') {
             const botImage = document.createElement('img');
             botImage.src = 'static/eva_capa.png';
             messageElement.appendChild(botImage);
-    
+
             const messageText = document.createElement('div');
             messageText.classList.add('typing-animation');
             messageElement.appendChild(messageText);
-    
+
             typeText(messageText, text, 0);
         } else {
             const messageText = document.createElement('div');
             messageText.textContent = text;
             messageElement.appendChild(messageText);
         }
-    
+
         return messageElement;
     }
-    
-  
+
     function typeText(element, text, index) {
         const typingSpeed = 5; // Velocidade de digitação em milissegundos
         if (index < text.length) {
@@ -146,51 +113,53 @@ document.addEventListener('DOMContentLoaded', function() {
             translateMessages(languageSelect.value);
         }
     }
-    
-  
-    languageSelect.addEventListener('change', function() {
-        const selectedLanguage = this.value;
-        translateMessages(selectedLanguage);
+});
+
+// Adicionando o menu lateral
+document.addEventListener('DOMContentLoaded', function () {
+    const menuLateral = document.getElementById('menuLateral');
+    const mainContent = document.getElementById('main-content');
+    const menuLateralToggle = document.getElementById('menuLateralToggle');
+
+    menuLateralToggle.addEventListener('click', function() {
+        menuLateral.classList.toggle('active');
+        mainContent.classList.toggle('shifted'); // Adiciona ou remove a margem
     });
-  
-    function translateMessages(targetLanguage) {
-        if (!targetLanguage) return;  // Verifica se um idioma foi selecionado
-  
-        const messages = document.querySelectorAll('.chat-message');
-        messages.forEach(message => {
-            if (message.classList.contains('user-message')) {
-                const originalText = message.textContent;
-                translateText(originalText, targetLanguage).then(translatedText => {
-                    message.textContent = translatedText;
-                });
-            } else if (message.classList.contains('chatbot-message')) {
-                const messageText = message.querySelector('.typing-animation').textContent;
-                translateText(messageText, targetLanguage).then(translatedText => {
-                    message.querySelector('.typing-animation').textContent = translatedText;
-                });
+});
+
+// Deixando o menu lateral ativo
+document.getElementById("menuLateralToggle").addEventListener("click", function() {
+    this.classList.toggle("active");
+});
+
+// Função para preencher o campo de mensagem com o texto das perguntas frequentes
+document.addEventListener('DOMContentLoaded', function() {
+    // Seleciona todos os botões de perguntas frequentes e adiciona o evento de clique
+    document.querySelectorAll('.question-btn').forEach(button => {
+        button.addEventListener('click', function() {
+            const question = this.getAttribute('data-question');
+            
+            // Preenche o campo de input com a pergunta selecionada
+            document.getElementById('message').value = question;
+
+            // Remove a div que contém os botões de perguntas frequentes
+            const frequentQuestionsDiv = document.getElementById('frequent-questions');
+            if (frequentQuestionsDiv) {
+                frequentQuestionsDiv.parentNode.removeChild(frequentQuestionsDiv); // Remove a div do DOM
             }
         });
-    }
-  
-    function translateText(text, targetLanguage) {
-        const apiKey = '';
-        const url = `https://translation.googleapis.com/language/translate/v2?key=${apiKey}`;
-        
-        return fetch(url, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({
-                q: text,
-                target: targetLanguage
-            })
-        })
-        .then(response => response.json())
-        .then(data => data.data.translations[0].translatedText)
-        .catch(error => {
-            console.error('Erro ao traduzir:', error);
-            return text;  // Retorna o texto original se houver um erro
-        });
-    }
-  });
+    });
+});
+
+
+//baixar pdf ao clicar no botão
+    document.getElementById('downloadPdfBtn').addEventListener('click', function() {
+        const pdfSelect = document.getElementById('pdfSelect');
+        const selectedPdf = pdfSelect.value;
+        if (selectedPdf) {
+            const link = document.createElement('a');
+            link.href = selectedPdf;  // URL do arquivo PDF
+            link.download = selectedPdf;  // coloca o nome,  
+            link.click();
+        } 
+    });

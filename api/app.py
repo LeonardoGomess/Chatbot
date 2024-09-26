@@ -4,9 +4,12 @@ from PyPDF2 import PdfReader
 import google.generativeai as genai
 import os
 import mysql.connector
-
+from sentence_transformers import SentenceTransformer
+from sklearn.metrics.pairwise import cosine_similarity
+import numpy as np
 
 app = Flask(__name__,static_folder="static",template_folder="templates")
+model_embedding = SentenceTransformer('all-MiniLM-L6-v2')
 
 # Carrega as variáveis de ambiente
 load_dotenv()
@@ -14,6 +17,9 @@ api_key = os.getenv('GENAI_API_KEY')
 genai.configure(api_key=api_key)
 model = genai.GenerativeModel('gemini-1.5-flash')
 
+
+def vetorizar_texto(texto):
+    return model_embedding.encode(texto)
 
 # Função para extrair texto e PDFs
 def extract_text_from_pdf(pdf_path):
@@ -37,50 +43,60 @@ cursor = conn.cursor()
 
 # Cria a tabela se ela não existir
 cursor.execute("""
-    CREATE TABLE IF NOT EXISTS pdf_content (
-        id INT AUTO_INCREMENT PRIMARY KEY,
-        filename VARCHAR(255),
-        content TEXT(100000)
-    )
+CREATE TABLE IF NOT EXISTS pdf_content (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    filename VARCHAR(255),
+    content TEXT(100000),
+    vector TEXT(200000)  
+)
+
 """)
 
 cursor.close()
 
 
-# Função para carregar PDFs e inserir no banco de dados
-# def carregar_pdfs(diretorio):
-#     for filename in os.listdir(diretorio):
-#         if filename.endswith('.pdf'):
-#             pdf_path = os.path.join(diretorio, filename) 
-#             text = extract_text_from_pdf(pdf_path)[:100000]
 
-#             cursor.execute("SELECT 1 FROM pdf_content WHERE filename = %s", (filename,))
-#             if cursor.fetchone() is None:
-#                 cursor.execute("INSERT INTO pdf_content (filename, content) VALUES (%s, %s)", (filename, text))
-#                 conn.commit()
-
-#     cursor.execute("SELECT content FROM pdf_content")
-#     return [row[0] for row in cursor]
 
 def carregar_pdfs(diretorio):
-    # Ensure the connection is open
+    # Certifique-se de que a conexão está aberta
     if not conn.is_connected():
-        conn.reconnect()  # Reconnect if the connection was lost
-    
+        conn.reconnect()
+
     with conn.cursor() as cursor:
         for filename in os.listdir(diretorio):
             if filename.endswith('.pdf'):
-                pdf_path = os.path.join(diretorio, filename) 
+                pdf_path = os.path.join(diretorio, filename)
+                
+                # Extração e vetorização
                 text = extract_text_from_pdf(pdf_path)[:100000]
+                vetor = vetorizar_texto(text)  # Vetoriza o conteúdo do PDF
 
-                cursor.execute("SELECT 1 FROM pdf_content WHERE filename = %s", (filename,))
-                if cursor.fetchone() is None:
-                    cursor.execute("INSERT INTO pdf_content (filename, content) VALUES (%s, %s)", (filename, text))
-                    conn.commit()
+                if vetor is not None and len(vetor) > 0:
+                    vetor_str = ','.join(map(str, vetor.tolist()))
+                    cursor.execute("SELECT 1 FROM pdf_content WHERE filename = %s", (filename,))
+                    if cursor.fetchone() is None:
+                        cursor.execute(
+                            "INSERT INTO pdf_content (filename, content, vector) VALUES (%s, %s, %s)",
+                            (filename, text, vetor_str)
+                        )
+                        conn.commit()
+                else:
+                    print(f"Vetor vazio ou inválido para o arquivo {filename}, não será inserido no BD")
 
-        cursor.execute("SELECT content FROM pdf_content")
-        return [row[0] for row in cursor]
+        # Após a inserção, buscar os conteúdos e vetores já armazenados
+        cursor.execute("SELECT content, vector FROM pdf_content")
+        rows = cursor.fetchall()
 
+        processed_data = []
+        for row in rows:
+            content, vector_str = row
+            if vector_str:  # Certifique-se de que o vetor não é None
+                vector = np.array(vector_str.split(','), dtype=float)
+            else:
+                vector = np.array([])  # Ou outro comportamento desejado para vetores None
+            processed_data.append((content, vector))
+        
+        return processed_data
 
 # Rota para a página inicial
 @app.route('/')
@@ -90,65 +106,62 @@ def index():
 
 contexto = []
 
+
 system_prompt = """
-    Você é um chatbot especialista em compliance. Sua função é ajudar os usuários a encontrar informações relevantes sobre compliance com base nas informaçoes que voce tem.
+    Você é um chatbot especialista em compliance. Sua função é ajudar os usuários a encontrar informações relevantes sobre compliance com base nas informações que você tem no seu sistema.
 
     **Diretrizes Gerais:**
-
-    1. **IMPORTANTE:** Responda às perguntas de forma natural e precisa.
-    2  **IMPORTANTE:** Em casos de perguntas ou informacoes pedidas sem sentido e sem contexto , faça: uma resposta para que o usuario de mais informaçoes sobre oque ele precisa.
-    3. **IMPORTANTE:** Evite dar respostas vagas ou genéricas. Sempre forneça informações específicas e relevantes.
-    4. **IMPORTANTE:** Não inclua nas respostas informações que não estejam nos PDFs.
-    5. **IMPORTANTE:** Não crie informações falsas ou inventadas. Responda apenas com base nos dados que você possui.
-    6.  **IMPORTANTE:** Não fique mensionando os PDFs.
-    7. **IMPORTANTE:** Foque diretamente na informação solicitada, sem adicionar informações irrelevantes.
-    8. **IMPORTANTE:** Se for solicitado um resumo, forneça um resumo conciso e direto das informações. 
-    9. **IMPORTANTE:** Se não encontrar a resposta nos PDFs, indique outras fontes onde o usuário possa encontrar a informação.
-    10. **IMPORTANTE:** Quando solicitado: "Me forneça mais detalhes ou informações sobre essa resposta fornecida", use o contexto da conversa e forneça mais informações relevantes que você conseguir encontrar nos PDFs.
-    11. **IMPORTANTE:** Caso receba perguntas que não estejam relacionadas a compliance, responda com uma mensagem de desculpas;
-    12. **IMPORTANTE:** Responda mensagens de boas-vindas de forma natural e agradável. 
-    13. **IMPORTANTE:** Responda mensagens de agradecimentos de forma natural e agradável.
-
+    0. **MAIS IMPORTANTE:** Responda às perguntas retornando exatamente o conteudo  relevante que voce encontrar nos PDFs disponíveis no seu sistema.
+    1. **IMPORTANTE:** Responda de forma natural, precisa e completa, fornecendo informações específicas.
+    2. **IMPORTANTE:** Se a pergunta não for clara ou estiver sem contexto, solicite ao usuário mais detalhes para fornecer uma resposta adequada.
+    3. **IMPORTANTE:** Evite respostas vagas ou genéricas. Sempre forneça informações específicas e completas.
+    4. **IMPORTANTE:** Não inclua nas respostas informações que não estejam presentes nos PDFs.
+    5. **IMPORTANTE:** Não crie informações falsas ou inventadas.
+    6. **IMPORTANTE:** Foque diretamente na informação solicitada e evite adicionar informações irrelevantes.
+    7. **IMPORTANTE:** Se não encontrar a resposta nos PDFs, informe ao usuário que a informação não está disponível e sugira consultar outras fontes para mais detalhes.
+    8. **IMPORTANTE:** Quando solicitado "Me forneça mais detalhes ou informações sobre essa resposta fornecida", use o contexto da conversa e forneça mais informações relevantes encontradas nos PDFs.
+    9. **IMPORTANTE:** Caso receba perguntas que não estejam relacionadas a compliance, peça desculpas e explique que o chatbot só pode responder a perguntas relacionadas a compliance.
+    10. **IMPORTANTE:** Responda mensagens de boas-vindas de forma natural e agradável.
+    11. **IMPORTANTE:** Responda mensagens de agradecimento de forma natural e agradável.
+    12. **IMPORTANTE:** Ao final de cada resposta fale de qual pdf voce retirou essa informação.
+  
 """
 
 
 def gerar_resposta(prompt, contexto):
-    # Recupera o contexto da última resposta, se houver
-    ultima_resposta = ""
-    if contexto and contexto[-1].startswith("Chatbot:"):
-        ultima_resposta = contexto[-1].split("Chatbot:")[1].strip()
-
+    # Vetoriza a pergunta do usuário
+    vetor_pergunta = vetorizar_texto(prompt)
+    
     # Recupera o conteúdo dos PDFs do banco de dados
-    pdf_content = ""
+    pdf_content_vetores = []
     if conn.is_connected():
         with conn.cursor() as cursor:
-            cursor.execute("SELECT content FROM pdf_content")
+            cursor.execute("SELECT content, vector FROM pdf_content")
             pdf_rows = cursor.fetchall()
-            pdf_content = " ".join(row[0] for row in pdf_rows)
+            pdf_content_vetores = [(row[0], np.array(row[1].split(','), dtype=float)) for row in pdf_rows]
 
+    # Calcula a similaridade entre a pergunta e o conteúdo dos PDFs
+    similaridades = [(conteudo, cosine_similarity([vetor_pergunta], [vetor])[0][0]) for conteudo, vetor in pdf_content_vetores]
+    
+    # Ordena os resultados pela similaridade
+    similaridades = sorted(similaridades, key=lambda x: x[1], reverse=True)
 
+    # Use o conteúdo mais relevante para construir o prompt
+    pdf_content_relevante = similaridades[0][0] if similaridades else ""
 
-    # Cria o prompt baseado na última resposta e na pergunta atual
-    if ultima_resposta:
-        # Adiciona o contexto da última resposta e o conteúdo dos PDFs
-        full_prompt = (
-            f"Diretrizes Gerais:{system_prompt}\n\n"
-            f"Contexto da última resposta: {ultima_resposta}\n\n"
-            f"Conteúdo dos PDFs:\n{pdf_content}\n\n"
-            f"Pergunta atual: {prompt}\n\n"
-        )
-    else:
-        # Contexto inicial com o conteúdo dos PDFs
-        full_prompt = (
-            f"Diretrizes Gerais:{system_prompt}\n\n"
-            f"Conteúdo dos PDFs:\n{pdf_content}\n\n"
-            f"Pergunta atual: {prompt}\n\n"
-        )
+    # Incluir o contexto da conversa no prompt
+    conversa_anterior = "\n".join(contexto)
+    
+    full_prompt = (
+        f"Diretrizes Gerais:{system_prompt}\n\n"
+        f"Conteúdo dos PDFs relevantes:\n{pdf_content_relevante}\n\n"
+        f"Histórico da conversa:\n{conversa_anterior}\n\n"
+        f"Pergunta atual: {prompt}\n\n"
+    )
     
     # Gera a resposta usando o modelo
     response = model.generate_content(full_prompt)
     return response.text
-
 
 
 def atualizar_contexto(contexto, pergunta, resposta, limite=5):
