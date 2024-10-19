@@ -1,13 +1,10 @@
-body {
+html,body {
   font-family: 'Helvetica Neue', Arial, sans-serif;
   display: flex;
   justify-content: center;
   align-items: center;
   min-height: 100vh;
-   background-image: url(/static/Walpaper.png);
-      background-size: cover; 
-      background-repeat: no-repeat; 
-      background-position: center; 
+
   margin: 0;
   color: #dcdcdc;
 
@@ -16,10 +13,19 @@ body {
 
 
    font-family: 'Orbitron', sans-serif;
-  
+   overflow-x: hidden;
+   overflow-y: auto; /* Permite a rolagem vertical */
+   -webkit-overflow-scrolling: touch; /* Habilita rolagem suave em dispositivos iOS */
 }
 
 
+
+body{
+  background-image: url(/static/Walpaper.png);
+  background-size: cover; 
+  background-repeat: no-repeat; 
+  background-position: center; 
+}
 
 
 
@@ -94,6 +100,8 @@ body {
   height: 100%;
   background-color: rgba(0, 0, 0, 0.5);
   z-index: 9999;
+  overflow-y: auto;
+
 }
 
 .modal-hidden {
@@ -466,50 +474,77 @@ Estilos para o container do select
 
 /* Menu Lateral */
 
+/* Botão de alternância do menu lateral */
 #menuLateralToggle {
-    position: fixed; /* Fixado na tela */
-    top: 20px; /* Distância do topo */
-    left: 20px; /* Distância da esquerda */
-    z-index: 1001; /* A acima do menu lateral */
-    background-color: transparent; /* Remove o fundo azul */
-    color: white; /* Cor do texto */
-    border: 2px solid white; /* Borda branca */
-    border-radius: 100px; /* Bordas arredondadas */
-    padding: 10px 15px; /* Espaçamento interno do botão */
-    transition: background-color 0.3s, color 0.3s, border-color 0.3s; /* Efeito de transição */
+  position: fixed; /* Fixado na tela */
+  top: 20px; /* Distância do topo */
+  left: 20px; /* Distância da esquerda */
+  z-index: 1001; /* Acima do menu lateral */
+  background-color: transparent; /* Remove o fundo azul */
+  color: white; /* Cor do texto */
+  border: 2px solid white; /* Borda branca */
+  border-radius: 100px; /* Bordas arredondadas */
+  padding: 10px 15px; /* Espaçamento interno do botão */
+  cursor: pointer; /* Mostra que é clicável */
+  transition: background-color 0.3s, color 0.3s, border-color 0.3s; /* Efeito de transição */
 }
 
 #menuLateralToggle:hover {
-    background-color: rgba(255, 255, 255, 0.2); /* Fundo claro ao passar o mouse */
-    color: #007bff; /* Cor do texto ao passar o mouse */
-    border-color: #007bff; /* Cor da borda ao passar o mouse */
+  background-color: rgba(255, 255, 255, 0.2); /* Fundo claro ao passar o mouse */
+  color: #007bff; /* Cor do texto ao passar o mouse */
+  border-color: #007bff; /* Cor da borda ao passar o mouse */
 }
 
 #menuLateralToggle.active {
-    background-color: rgba(0, 0, 0, 0.4); /* Fundo mais escuro quando ativo */
-    color: #007bff; /* Cor do texto ao ativo */
-    border-color: #007bff; /* Cor da borda ao ativo */
+  background-color: rgba(0, 0, 0, 0.4); /* Fundo mais escuro quando ativo */
+  color: #007bff; /* Cor do texto quando ativo */
+  border-color: #007bff; /* Cor da borda quando ativo */
 }
 
-
-
-#menuLateral.active {
-    transform: translateX(0); /* Expande o menu */
-}
-
+/* Menu lateral */
 #menuLateral {
   height: 100vh; /* Altura total da tela */
-  position: fixed;
-  width: 250px;
+  position: fixed; /* Menu fixo na lateral esquerda */
+  width: 250px; /* Largura do menu */
   background-color: #011b34; /* Cor do fundo */
   color: white; /* Cor do texto */
-  padding: 20px;
-  left: 0; /* Sempre visível */
-  transition: transform 0.3s;
-  transform: translateX(-100%); /* Começa escondido */
+  padding: 20px; /* Espaçamento interno */
+  left: 0; /* Sempre na lateral esquerda */
+  top: 0; /* Ancorado ao topo */
+  bottom: 0; /* Garante que o menu cubra toda a altura */
+  transition: transform 0.3s ease-in-out; /* Transição suave */
+  transform: translateX(-100%); /* Começa fora da tela */
   z-index: 1000; /* Acima de outros elementos */
   overflow-y: auto; /* Habilita rolagem vertical */
+  -webkit-overflow-scrolling: touch; /* Habilita rolagem suave em dispositivos iOS */
 }
+
+/* Estilos para navegadores baseados em WebKit (Chrome, Safari) */
+#menuLateral::-webkit-scrollbar {
+  width: 8px; /* Largura da barra de rolagem */
+}
+
+#menuLateral::-webkit-scrollbar-thumb {
+  background-color: #ff5722; /* Cor do "polegar" da barra de rolagem */
+  border-radius: 4px; /* Arredondamento das bordas do polegar */
+}
+
+#menuLateral::-webkit-scrollbar-track {
+  background-color: #2c3e50; /* Cor do trilho da barra de rolagem */
+}
+
+/* Estilos para Firefox */
+#menuLateral {
+  scrollbar-width: thin; /* Espessura da barra de rolagem */
+  scrollbar-color: #FFF200 #00246600; /* Cor do "polegar" e do trilho */
+}
+
+
+/* Quando o menu está ativo (visível) */
+#menuLateral.active {
+  transform: translateX(0); /* Expande o menu */
+}
+
 
 
 #menuLateral.active {
@@ -602,6 +637,7 @@ Estilos para o container do select
     background-color: #002447;
     border-radius: 8px;
     text-align: center;
+    margin-bottom: 50px;
 }
 
 .select-container label {

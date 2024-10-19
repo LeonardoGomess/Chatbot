@@ -110,57 +110,75 @@ contexto = []
 system_prompt = """
     Você é um chatbot especialista em compliance. Sua função é ajudar os usuários a encontrar informações relevantes sobre compliance com base nas informações que você tem no seu sistema.
 
-    **Diretrizes Gerais:**
-    0. **MAIS IMPORTANTE:** Responda às perguntas retornando exatamente o conteudo  relevante que voce encontrar nos PDFs disponíveis no seu sistema.
-    1. **IMPORTANTE:** Responda de forma natural, precisa e completa, fornecendo informações específicas.
-    2. **IMPORTANTE:** Se a pergunta não for clara ou estiver sem contexto, solicite ao usuário mais detalhes para fornecer uma resposta adequada.
-    3. **IMPORTANTE:** Evite respostas vagas ou genéricas. Sempre forneça informações específicas e completas.
-    4. **IMPORTANTE:** Não inclua nas respostas informações que não estejam presentes nos PDFs.
-    5. **IMPORTANTE:** Não crie informações falsas ou inventadas.
-    6. **IMPORTANTE:** Foque diretamente na informação solicitada e evite adicionar informações irrelevantes.
-    7. **IMPORTANTE:** Se não encontrar a resposta nos PDFs, informe ao usuário que a informação não está disponível e sugira consultar outras fontes para mais detalhes.
-    8. **IMPORTANTE:** Quando solicitado "Me forneça mais detalhes ou informações sobre essa resposta fornecida", use o contexto da conversa e forneça mais informações relevantes encontradas nos PDFs.
-    9. **IMPORTANTE:** Caso receba perguntas que não estejam relacionadas a compliance, peça desculpas e explique que o chatbot só pode responder a perguntas relacionadas a compliance.
-    10. **IMPORTANTE:** Responda mensagens de boas-vindas de forma natural e agradável.
-    11. **IMPORTANTE:** Responda mensagens de agradecimento de forma natural e agradável.
-    12. **IMPORTANTE:** Ao final de cada resposta fale de qual pdf voce retirou essa informação.
   
+    Diretrizes Gerais:
+
+
+    1.IMPORTANTE: Responder apenas a perguntas ou dúvidas relacionadas a compliance.
+    2.IMPORTANTE: Quando o usuário fizer uma pergunta que não seja sobre compliance,voce deve responder educadamente, informando que só pode fornecer informações e respostas relacionadas a esse tema.
+    3.MAIS IMPORTANTE: Responda às perguntas retornando exatamente o conteúdo relevante encontrado nos PDFs disponíveis no sistema.
+    4.IMPORTANTE: Responda de forma natural, precisa e completa, fornecendo informações específicas.
+    5.IMPORTANTE: Se a pergunta não estiver clara ou for vaga, peça mais detalhes ao usuário e reforce que responde apenas a questões sobre compliance.
+    6.IMPORTANTE: Evite respostas vagas ou genéricas. Sempre forneça informações específicas e completas.
+    7.IMPORTANTE: Não inclua nas respostas informações que não estejam presentes nos PDFs.
+    8.IMPORTANTE: Não crie informações falsas ou inventadas.
+    9.IMPORTANTE: Foque diretamente na informação solicitada e evite adicionar informações irrelevantes.
+    10.IMPORTANTE: Se não encontrar a resposta nos PDFs, informe ao usuário que a informação não está disponível e sugira consultar outras fontes para mais detalhes.
+    11.IMPORTANTE: Quando solicitado "Me forneça mais detalhes ou informações sobre essa resposta fornecida", use o contexto da conversa e forneça mais informações relevantes encontradas nos PDFs.
+    12.IMPORTANTE: Caso receba perguntas que não estejam relacionadas a compliance, peça desculpas e explique que o chatbot só pode responder a perguntas relacionadas a compliance.
+    13.IMPORTANTE: Responda mensagens de boas-vindas de forma natural e agradável.
+    14.IMPORTANTE: Responda mensagens de agradecimento de forma natural e agradável.
+    15.IMPORTANTE: Ao final de cada resposta, indique de qual PDF a informação foi retirada.
+
 """
 
 
+
 def gerar_resposta(prompt, contexto):
+
+
     # Vetoriza a pergunta do usuário
     vetor_pergunta = vetorizar_texto(prompt)
     
-    # Recupera o conteúdo dos PDFs do banco de dados
+    # Recupera o conteúdo dos PDFs e seus vetores do banco de dados
     pdf_content_vetores = []
     if conn.is_connected():
         with conn.cursor() as cursor:
             cursor.execute("SELECT content, vector FROM pdf_content")
             pdf_rows = cursor.fetchall()
-            pdf_content_vetores = [(row[0], np.array(row[1].split(','), dtype=float)) for row in pdf_rows]
+            pdf_content_vetores = [
+                (row[0], np.array(row[1].split(','), dtype=float)) for row in pdf_rows
+            ]
 
     # Calcula a similaridade entre a pergunta e o conteúdo dos PDFs
-    similaridades = [(conteudo, cosine_similarity([vetor_pergunta], [vetor])[0][0]) for conteudo, vetor in pdf_content_vetores]
+    similaridades = [
+        (conteudo, cosine_similarity([vetor_pergunta], [vetor])[0][0])
+        for conteudo, vetor in pdf_content_vetores
+    ]
     
     # Ordena os resultados pela similaridade
-    similaridades = sorted(similaridades, key=lambda x: x[1], reverse=True)
+    similaridades.sort(key=lambda x: x[1], reverse=True)
 
     # Use o conteúdo mais relevante para construir o prompt
-    pdf_content_relevante = similaridades[0][0] if similaridades else ""
+    pdf_content_relevante = similaridades[0][0] if similaridades else "Nenhum conteúdo relevante encontrado."
 
-    # Incluir o contexto da conversa no prompt
-    conversa_anterior = "\n".join(contexto)
+    # Incluir o contexto da conversa no prompt, limitando-se ao último tópico se necessário
+    conversa_anterior = "\n".join(contexto) if contexto else "Nenhuma conversa anterior."
     
+    # Adiciona a pergunta atual ao contexto
+    conversa_anterior += f"\nUsuário: {prompt}"
+
+    # Monta o prompt completo
     full_prompt = (
-        f"Diretrizes Gerais:{system_prompt}\n\n"
+        f"Diretrizes Gerais:\n{system_prompt}\n\n"
         f"Conteúdo dos PDFs relevantes:\n{pdf_content_relevante}\n\n"
         f"Histórico da conversa:\n{conversa_anterior}\n\n"
-        f"Pergunta atual: {prompt}\n\n"
+        f"Pergunta atual, responda sempre de forma completa, precisa e detalhada:. {prompt}\n\n"
     )
     
     # Gera a resposta usando o modelo
     response = model.generate_content(full_prompt)
+    
     return response.text
 
 
@@ -177,13 +195,12 @@ def atualizar_contexto(contexto, pergunta, resposta, limite=5):
     # Adiciona a nova pergunta e resposta ao contexto
     contexto.append(f"Usuário: {pergunta}")
     contexto.append(f"Chatbot: {resposta}")
-    
+
     # Limita o número de mensagens no contexto
     if len(contexto) > limite * 2:
         contexto = contexto[-limite * 2:]  # Mantém apenas as últimas mensagens
 
     return contexto
-
 
 # Rota para o chat
 @app.route('/chat', methods=['POST'])
