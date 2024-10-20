@@ -18,16 +18,6 @@ genai.configure(api_key=api_key)
 model = genai.GenerativeModel('gemini-1.5-flash')
 
 
-def vetorizar_texto(texto):
-    return model_embedding.encode(texto)
-
-# Função para extrair texto e PDFs
-def extract_text_from_pdf(pdf_path):
-    with open(pdf_path, 'rb') as pdf_file:
-        pdf_reader = PdfReader(pdf_file)
-        text = ''.join([page.extract_text() for page in pdf_reader.pages])
-    return text
-
 # Configuração do banco de dados MySQL
 config = {
     'user': os.getenv('DB_USER'),
@@ -39,34 +29,47 @@ config = {
 
 # Cria a conexão com o banco de dados
 conn = mysql.connector.connect(**config)
-cursor = conn.cursor()
 
 # Cria a tabela se ela não existir
-cursor.execute("""
-CREATE TABLE IF NOT EXISTS pdf_content (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    filename VARCHAR(255),
-    content TEXT(100000),
-    vector TEXT(200000)  
-)
+with conn.cursor() as cursor:
+    cursor.execute("""
+    CREATE TABLE IF NOT EXISTS pdf_content (
+        id INT AUTO_INCREMENT PRIMARY KEY,
+        filename VARCHAR(255),
+        content TEXT,
+        vector TEXT
+    )
+    """)
+    conn.commit()  # Garante que a criação da tabela é persistida
 
-""")
+def extract_text_from_pdf(pdf_path):
+    """Extrai texto de um arquivo PDF."""
+    text = ''
+    with open(pdf_path, 'rb') as pdf_file:
+        pdf_reader = PdfReader(pdf_file)
+        text = ''.join([page.extract_text() for page in pdf_reader.pages if page.extract_text()])
+    return text
 
-cursor.close()
-
-
-
+def vetorizar_texto(texto):
+    """Vetoriza o texto usando um modelo de embedding."""
+    return model_embedding.encode(texto)
 
 def carregar_pdfs(diretorio):
+    """
+    Carrega PDFs de um diretório, extrai texto, vetoriza e armazena no banco de dados.
+    Retorna os conteúdos e vetores processados.
+    """
     # Certifique-se de que a conexão está aberta
     if not conn.is_connected():
         conn.reconnect()
+
+    processed_data = []
 
     with conn.cursor() as cursor:
         for filename in os.listdir(diretorio):
             if filename.endswith('.pdf'):
                 pdf_path = os.path.join(diretorio, filename)
-                
+
                 # Extração e vetorização
                 text = extract_text_from_pdf(pdf_path)[:100000]
                 vetor = vetorizar_texto(text)  # Vetoriza o conteúdo do PDF
@@ -74,29 +77,37 @@ def carregar_pdfs(diretorio):
                 if vetor is not None and len(vetor) > 0:
                     vetor_str = ','.join(map(str, vetor.tolist()))
                     cursor.execute("SELECT 1 FROM pdf_content WHERE filename = %s", (filename,))
+                    
                     if cursor.fetchone() is None:
                         cursor.execute(
                             "INSERT INTO pdf_content (filename, content, vector) VALUES (%s, %s, %s)",
                             (filename, text, vetor_str)
                         )
                         conn.commit()
+                        print(f"Arquivo {filename} inserido no banco de dados.")
+                    else:
+                        print(f"O arquivo {filename} já existe no banco de dados. Ignorando inserção.")
                 else:
-                    print(f"Vetor vazio ou inválido para o arquivo {filename}, não será inserido no BD")
+                    print(f"Vetor vazio ou inválido para o arquivo {filename}, não será inserido no BD.")
 
         # Após a inserção, buscar os conteúdos e vetores já armazenados
         cursor.execute("SELECT content, vector FROM pdf_content")
         rows = cursor.fetchall()
 
-        processed_data = []
         for row in rows:
             content, vector_str = row
             if vector_str:  # Certifique-se de que o vetor não é None
                 vector = np.array(vector_str.split(','), dtype=float)
             else:
-                vector = np.array([])  # Ou outro comportamento desejado para vetores None
+                vector = np.array([])  # Comportamento desejado para vetores None
             processed_data.append((content, vector))
-        
-        return processed_data
+
+    return processed_data  # Retorna a lista de conteúdos e vetores processados
+
+
+# Não se esqueça de fechar a conexão quando terminar
+conn.close()
+
 
 # Rota para a página inicial
 @app.route('/')

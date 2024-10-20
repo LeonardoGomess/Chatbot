@@ -56,12 +56,7 @@ document.addEventListener('DOMContentLoaded', function() {
             .then(chatbotResponse => {
                 // Remove a mensagem de "digitando" e adiciona a resposta real
                 messages.removeChild(typingMessageElement);
-                const responseElement = createMessageElement(chatbotResponse, 'chatbot-message');
-                messages.appendChild(responseElement);
-                chatbox.scrollTop = chatbox.scrollHeight;
-
-                // Traduzir a nova mensagem do chatbot após adicioná-la
-                translateMessages(languageSelect.value);
+                typeChatbotResponse(chatbotResponse); // Chama a função para digitar a resposta
             })
             .catch(error => {
                 console.error('Erro ao enviar mensagem:', error);
@@ -83,40 +78,50 @@ document.addEventListener('DOMContentLoaded', function() {
         const messageElement = document.createElement('div');
         messageElement.classList.add('chat-message', className);
 
+        // Substitui as quebras de linha por elementos <br>
+        const formattedText = text.replace(/\n/g, '<br>');
+
         if (className === 'chatbot-message') {
             const botImage = document.createElement('img');
             botImage.src = 'static/eva_capa.png';
             messageElement.appendChild(botImage);
 
             const messageText = document.createElement('div');
-            messageText.classList.add('typing-animation');
+            messageText.innerHTML = formattedText; // Usar innerHTML para suportar <br>
             messageElement.appendChild(messageText);
-
-            typeText(messageText, text, 0);
         } else {
             const messageText = document.createElement('div');
-            messageText.textContent = text;
+            messageText.innerHTML = formattedText; // Usar innerHTML para suportar <br>
             messageElement.appendChild(messageText);
         }
 
         return messageElement;
     }
 
-    function typeText(element, text, index) {
-        const typingSpeed = 5; // Velocidade de digitação em milissegundos
-        if (index < text.length) {
-            element.textContent += text.charAt(index);
-            setTimeout(() => typeText(element, text, index + 1), typingSpeed);
-        } else {
-            // Remove a animação de "digitando" quando a digitação estiver completa
-            element.classList.remove('typing-animation');
-            translateMessages(languageSelect.value);
-        }
-    }
-});
+    // Função para digitar a resposta do chatbot letra por letra
+    function typeChatbotResponse(response) {
+        const responseElement = createMessageElement('', 'chatbot-message');
+        messages.appendChild(responseElement);
+        chatbox.scrollTop = chatbox.scrollHeight;
 
-// Adicionando o menu lateral
-document.addEventListener('DOMContentLoaded', function () {
+        let i = 0;
+        const typingSpeed = 5; 
+
+        function type() {
+            if (i < response.length) {
+                const formattedText = response.slice(0, i + 1).replace(/\n/g, '<br>');
+                responseElement.querySelector('div').innerHTML = formattedText; // Atualiza o texto da resposta
+                i++;
+                setTimeout(type, typingSpeed);
+            } else {
+                translateMessages(languageSelect.value); // Traduzir após a digitação completa
+            }
+        }
+
+        type(); // Inicia a função de digitação
+    }
+
+    // Adicionando o menu lateral
     const menuLateral = document.getElementById('menuLateral');
     const mainContent = document.getElementById('main-content');
     const menuLateralToggle = document.getElementById('menuLateralToggle');
@@ -125,22 +130,19 @@ document.addEventListener('DOMContentLoaded', function () {
         menuLateral.classList.toggle('active');
         mainContent.classList.toggle('shifted'); // Adiciona ou remove a margem
     });
-});
 
-// Deixando o menu lateral ativo
-document.getElementById("menuLateralToggle").addEventListener("click", function() {
-    this.classList.toggle("active");
-});
+    // Deixando o menu lateral ativo
+    menuLateralToggle.addEventListener("click", function() {
+        this.classList.toggle("active");
+    });
 
-// Função para preencher o campo de mensagem com o texto das perguntas frequentes
-document.addEventListener('DOMContentLoaded', function() {
-    // Seleciona todos os botões de perguntas frequentes e adiciona o evento de clique
+    // Função para preencher o campo de mensagem com o texto das perguntas frequentes
     document.querySelectorAll('.question-btn').forEach(button => {
         button.addEventListener('click', function() {
             const question = this.getAttribute('data-question');
             
             // Preenche o campo de input com a pergunta selecionada
-            document.getElementById('message').value = question;
+            messageInput.value = question;
 
             // Remove a div que contém os botões de perguntas frequentes
             const frequentQuestionsDiv = document.getElementById('frequent-questions');
@@ -149,17 +151,16 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
     });
-});
 
-
-//baixar pdf ao clicar no botão
+    // Baixar pdf ao clicar no botão
     document.getElementById('downloadPdfBtn').addEventListener('click', function() {
         const pdfSelect = document.getElementById('pdfSelect');
         const selectedPdf = pdfSelect.value;
         if (selectedPdf) {
             const link = document.createElement('a');
             link.href = selectedPdf;  // URL do arquivo PDF
-            link.download = selectedPdf;  // coloca o nome,  
+            link.download = selectedPdf;  // Nome do arquivo para download
             link.click();
         } 
     });
+});
